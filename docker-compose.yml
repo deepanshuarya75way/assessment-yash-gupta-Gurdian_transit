@@ -1,62 +1,58 @@
 services:
+  # 1. PostgreSQL Database with pgvector Extension
   postgres:
     image: pgvector/pgvector:pg16
     container_name: guardian_transit_postgres
-    restart: unless-stopped
+    restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-guardian_transit_db}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: guardian_transit_db
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-guardian_transit_db}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  # 2. FastAPI Python Async Backend Engine
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: guardian_transit_backend
-    restart: unless-stopped
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    environment:
-      PROJECT_NAME: "Guardian Transit AI"
-      ENVIRONMENT: "development"
-      DEBUG: "true"
-      POSTGRES_SERVER: "postgres"
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-guardian_transit_db}
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-guardian_transit_db}
-      SYNC_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-guardian_transit_db}
-      CORS_ORIGINS: '["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000"]'
-    ports:
-      - "${BACKEND_PORT:-8000}:8000"
-    volumes:
-      - ./backend:/app
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgrespassword@postgres:5432/guardian_transit_db
+    volumes:
+      - ./backend:/app/backend
+    command: ["sh", "-c", "alembic -c backend/alembic.ini upgrade head && uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload"]
+    ports:
+      - "8000:8000"
 
+  # 3. Next.js Frontend Application
   frontend:
     build:
-      context: ./frontend/next-app
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: guardian_transit_frontend
-    restart: unless-stopped
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-    ports:
-      - "${PORT:-3000}:3000"
+    restart: always
     depends_on:
       - backend
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
 
 volumes:
-  pgdata:
-    driver: local
+  postgres_data:
