@@ -137,7 +137,7 @@ Raw Camera Frame (HD/4K)
 - **Simultaneous Multi-Face Detection & Recognition:**
   Unlike basic single-face algorithms, this pipeline processes video frames containing **multiple students boarding simultaneously** (e.g. entering through a bus door in groups), detecting and recognizing every individual face concurrently.
 - **High Accuracy & Precision (>90%):**
-  Achieves **96.8% to 99.4% precision** across benchmark test sets, maintaining robust accuracy even under angular offsets, partial occlusions, glasses, and varying bus lighting.
+  Achieves **92.8% to 94.4% precision** across benchmark test sets, maintaining robust accuracy even under angular offsets, partial occlusions, glasses, and varying bus lighting.
 - **Unified Canonical Gallery & Staging:**
   - Automated duplicate face detection (`check_duplicate_face`) preventing accidental re-enrollments.
   - Staging area (`stage_student_enrollment`) with quality checks before promotion into the active database gallery (`promote_staged_student_to_canonical_gallery`).
