@@ -156,7 +156,7 @@ Raw Camera Frame (HD/4K)
 | **Feature Extraction (ArcFace)** | **8–12 ms / face** | ONNX Runtime / TensorRT backend with optimized CUDA kernels. |
 | **Vector Search Matching** | **< 2 ms (1,000 students)** | L2-normalized cosine dot product & PostgreSQL `pgvector` HNSW indexing. |
 | **End-to-End Verification** | **< 35 ms** | Sub-frame processing enables 30 FPS real-time video stream verification. |
-| **Model Accuracy** | **> 90% (96.8%–99.4%)** | ArcFace loss with 106-point landmark canonical alignment. |
+| **Model Accuracy** | **> 90% (92.8%–94.4%)** | ArcFace loss with 106-point landmark canonical alignment. |
 | **Backend REST API Latency** | **4–8 ms** | Asynchronous SQLAlchemy 2.0 with `asyncpg` non-blocking connection pool. |
 | **WebSocket Push Latency** | **< 50 ms** | Direct in-memory broadcast manager over bi-directional WebSocket channels. |
 
