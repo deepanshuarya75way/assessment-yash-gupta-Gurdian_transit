@@ -14,7 +14,10 @@ export interface Student {
   currentAddress?: string;
   busId: string;
   busNumber: string;
+  routeId?: string;
   routeName: string;
+  pickupStop?: string;
+  dropStop?: string;
   parentId: string;
   parentName: string;
   parentPhone: string;
@@ -35,6 +38,7 @@ export interface Parent {
   occupation: string;
   linkedStudentIds: string[];
   linkedStudentNames: string[];
+  password?: string;
 }
 
 export interface Bus {
@@ -63,6 +67,7 @@ export interface Bus {
   eta: string;
   latitude: number;
   longitude: number;
+  stops?: RouteStop[];
 }
 
 export interface Driver {
@@ -152,11 +157,14 @@ export const SEED_PARENTS: Parent[] = [
     "emergencyContact": "+91 98112 01001",
     "occupation": "Business Executive",
     "linkedStudentIds": [
-      "stu-yash-01"
+      "stu-yash-01",
+      "stu-ria-01"
     ],
     "linkedStudentNames": [
-      "Yash Gupta"
-    ]
+      "Yash Gupta",
+      "Ria Gupta"
+    ],
+    "password": "GT-5921"
   },
   {
     "id": "par-101",
@@ -172,7 +180,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Aarav Sharma"
-    ]
+    ],
+    "password": "GT-6058"
   },
   {
     "id": "par-102",
@@ -188,7 +197,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Ananya Verma"
-    ]
+    ],
+    "password": "GT-6195"
   },
   {
     "id": "par-103",
@@ -204,7 +214,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Rohan Gupta"
-    ]
+    ],
+    "password": "GT-6332"
   },
   {
     "id": "par-104",
@@ -220,7 +231,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Diya Singh"
-    ]
+    ],
+    "password": "GT-6469"
   },
   {
     "id": "par-105",
@@ -236,7 +248,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kabir Aggarwal"
-    ]
+    ],
+    "password": "GT-6606"
   },
   {
     "id": "par-106",
@@ -252,7 +265,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sneha Mishra"
-    ]
+    ],
+    "password": "GT-6743"
   },
   {
     "id": "par-107",
@@ -268,7 +282,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Aditya Chauhan"
-    ]
+    ],
+    "password": "GT-6880"
   },
   {
     "id": "par-108",
@@ -284,7 +299,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Isha Tiwari"
-    ]
+    ],
+    "password": "GT-7017"
   },
   {
     "id": "par-109",
@@ -300,7 +316,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Vihaan Yadav"
-    ]
+    ],
+    "password": "GT-7154"
   },
   {
     "id": "par-110",
@@ -316,7 +333,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Tanvi Pandey"
-    ]
+    ],
+    "password": "GT-7291"
   },
   {
     "id": "par-111",
@@ -332,7 +350,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Arjun Saxena"
-    ]
+    ],
+    "password": "GT-7428"
   },
   {
     "id": "par-112",
@@ -348,7 +367,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Pooja Bhatnagar"
-    ]
+    ],
+    "password": "GT-7565"
   },
   {
     "id": "par-113",
@@ -364,7 +384,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Aryan Chopra"
-    ]
+    ],
+    "password": "GT-7702"
   },
   {
     "id": "par-114",
@@ -380,7 +401,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Meera Malhotra"
-    ]
+    ],
+    "password": "GT-7839"
   },
   {
     "id": "par-115",
@@ -396,7 +418,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Yash Kapoor"
-    ]
+    ],
+    "password": "GT-7976"
   },
   {
     "id": "par-116",
@@ -412,7 +435,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Riya Jain"
-    ]
+    ],
+    "password": "GT-8113"
   },
   {
     "id": "par-117",
@@ -428,7 +452,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kunal Bansal"
-    ]
+    ],
+    "password": "GT-8250"
   },
   {
     "id": "par-118",
@@ -444,7 +469,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Anushka Goel"
-    ]
+    ],
+    "password": "GT-8387"
   },
   {
     "id": "par-119",
@@ -460,7 +486,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Nikhil Tyagi"
-    ]
+    ],
+    "password": "GT-8524"
   },
   {
     "id": "par-120",
@@ -476,7 +503,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Shreya Tomar"
-    ]
+    ],
+    "password": "GT-8661"
   },
   {
     "id": "par-121",
@@ -492,7 +520,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Manish Bhardwaj"
-    ]
+    ],
+    "password": "GT-8798"
   },
   {
     "id": "par-122",
@@ -508,7 +537,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Divya Tripathi"
-    ]
+    ],
+    "password": "GT-8935"
   },
   {
     "id": "par-123",
@@ -524,7 +554,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Dhruv Shukla"
-    ]
+    ],
+    "password": "GT-9072"
   },
   {
     "id": "par-124",
@@ -540,7 +571,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kavya Dubey"
-    ]
+    ],
+    "password": "GT-9209"
   },
   {
     "id": "par-125",
@@ -556,7 +588,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Rahul Rawat"
-    ]
+    ],
+    "password": "GT-9346"
   },
   {
     "id": "par-126",
@@ -572,7 +605,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Neha Bisht"
-    ]
+    ],
+    "password": "GT-9483"
   },
   {
     "id": "par-127",
@@ -588,7 +622,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Shivam Negi"
-    ]
+    ],
+    "password": "GT-9620"
   },
   {
     "id": "par-128",
@@ -604,7 +639,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Simran Chander"
-    ]
+    ],
+    "password": "GT-9757"
   },
   {
     "id": "par-129",
@@ -620,7 +656,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Varun Ranjan"
-    ]
+    ],
+    "password": "GT-9894"
   },
   {
     "id": "par-130",
@@ -636,7 +673,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kritika Deshmukh"
-    ]
+    ],
+    "password": "GT-1031"
   },
   {
     "id": "par-131",
@@ -652,7 +690,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Harsh Sharma"
-    ]
+    ],
+    "password": "GT-1168"
   },
   {
     "id": "par-132",
@@ -668,7 +707,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Shruti Verma"
-    ]
+    ],
+    "password": "GT-1305"
   },
   {
     "id": "par-133",
@@ -684,7 +724,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Gaurav Gupta"
-    ]
+    ],
+    "password": "GT-1442"
   },
   {
     "id": "par-134",
@@ -700,7 +741,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Nandini Singh"
-    ]
+    ],
+    "password": "GT-1579"
   },
   {
     "id": "par-135",
@@ -716,7 +758,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Ayush Aggarwal"
-    ]
+    ],
+    "password": "GT-1716"
   },
   {
     "id": "par-136",
@@ -732,7 +775,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Bhavya Mishra"
-    ]
+    ],
+    "password": "GT-1853"
   },
   {
     "id": "par-137",
@@ -748,7 +792,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Siddharth Chauhan"
-    ]
+    ],
+    "password": "GT-1990"
   },
   {
     "id": "par-138",
@@ -764,7 +809,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Prachi Tiwari"
-    ]
+    ],
+    "password": "GT-2127"
   },
   {
     "id": "par-139",
@@ -780,7 +826,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Rishabh Yadav"
-    ]
+    ],
+    "password": "GT-2264"
   },
   {
     "id": "par-140",
@@ -796,7 +843,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sakshi Pandey"
-    ]
+    ],
+    "password": "GT-2401"
   },
   {
     "id": "par-141",
@@ -812,7 +860,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Mayank Saxena"
-    ]
+    ],
+    "password": "GT-2538"
   },
   {
     "id": "par-142",
@@ -828,7 +877,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Mansi Bhatnagar"
-    ]
+    ],
+    "password": "GT-2675"
   },
   {
     "id": "par-143",
@@ -844,7 +894,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Pranav Chopra"
-    ]
+    ],
+    "password": "GT-2812"
   },
   {
     "id": "par-144",
@@ -860,7 +911,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Palak Malhotra"
-    ]
+    ],
+    "password": "GT-2949"
   },
   {
     "id": "par-145",
@@ -876,7 +928,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Karthik Kapoor"
-    ]
+    ],
+    "password": "GT-3086"
   },
   {
     "id": "par-146",
@@ -892,7 +945,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Rupal Jain"
-    ]
+    ],
+    "password": "GT-3223"
   },
   {
     "id": "par-147",
@@ -908,7 +962,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Chirag Bansal"
-    ]
+    ],
+    "password": "GT-3360"
   },
   {
     "id": "par-148",
@@ -924,7 +979,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Janhvi Goel"
-    ]
+    ],
+    "password": "GT-3497"
   },
   {
     "id": "par-149",
@@ -940,7 +996,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Tarun Tyagi"
-    ]
+    ],
+    "password": "GT-3634"
   },
   {
     "id": "par-150",
@@ -956,7 +1013,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Payal Tomar"
-    ]
+    ],
+    "password": "GT-3771"
   },
   {
     "id": "par-151",
@@ -972,7 +1030,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Aakash Bhardwaj"
-    ]
+    ],
+    "password": "GT-3908"
   },
   {
     "id": "par-152",
@@ -988,7 +1047,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Tanya Tripathi"
-    ]
+    ],
+    "password": "GT-4045"
   },
   {
     "id": "par-153",
@@ -1004,7 +1064,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Deepak Shukla"
-    ]
+    ],
+    "password": "GT-4182"
   },
   {
     "id": "par-154",
@@ -1020,7 +1081,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Mahima Dubey"
-    ]
+    ],
+    "password": "GT-4319"
   },
   {
     "id": "par-155",
@@ -1036,7 +1098,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Ashish Rawat"
-    ]
+    ],
+    "password": "GT-4456"
   },
   {
     "id": "par-156",
@@ -1052,7 +1115,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sonakshi Bisht"
-    ]
+    ],
+    "password": "GT-4593"
   },
   {
     "id": "par-157",
@@ -1068,7 +1132,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Abhinav Negi"
-    ]
+    ],
+    "password": "GT-4730"
   },
   {
     "id": "par-158",
@@ -1084,7 +1149,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Aditi Chander"
-    ]
+    ],
+    "password": "GT-4867"
   },
   {
     "id": "par-159",
@@ -1100,7 +1166,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sahil Ranjan"
-    ]
+    ],
+    "password": "GT-5004"
   },
   {
     "id": "par-160",
@@ -1116,7 +1183,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Garima Deshmukh"
-    ]
+    ],
+    "password": "GT-5141"
   },
   {
     "id": "par-161",
@@ -1132,7 +1200,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Vikas Sharma"
-    ]
+    ],
+    "password": "GT-5278"
   },
   {
     "id": "par-162",
@@ -1148,7 +1217,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Rashmi Verma"
-    ]
+    ],
+    "password": "GT-5415"
   },
   {
     "id": "par-163",
@@ -1164,7 +1234,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Mohit Gupta"
-    ]
+    ],
+    "password": "GT-5552"
   },
   {
     "id": "par-164",
@@ -1180,7 +1251,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Swati Singh"
-    ]
+    ],
+    "password": "GT-5689"
   },
   {
     "id": "par-165",
@@ -1196,7 +1268,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Aman Aggarwal"
-    ]
+    ],
+    "password": "GT-5826"
   },
   {
     "id": "par-166",
@@ -1212,7 +1285,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Nikita Mishra"
-    ]
+    ],
+    "password": "GT-5963"
   },
   {
     "id": "par-167",
@@ -1228,7 +1302,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Gaurika Chauhan"
-    ]
+    ],
+    "password": "GT-6100"
   },
   {
     "id": "par-168",
@@ -1244,7 +1319,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Alok Tiwari"
-    ]
+    ],
+    "password": "GT-6237"
   },
   {
     "id": "par-169",
@@ -1260,7 +1336,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Chhaya Yadav"
-    ]
+    ],
+    "password": "GT-6374"
   },
   {
     "id": "par-170",
@@ -1276,7 +1353,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Pankaj Pandey"
-    ]
+    ],
+    "password": "GT-6511"
   },
   {
     "id": "par-171",
@@ -1292,7 +1370,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Jyoti Saxena"
-    ]
+    ],
+    "password": "GT-6648"
   },
   {
     "id": "par-172",
@@ -1308,7 +1387,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sanjay Bhatnagar"
-    ]
+    ],
+    "password": "GT-6785"
   },
   {
     "id": "par-173",
@@ -1324,7 +1404,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kiran Chopra"
-    ]
+    ],
+    "password": "GT-6922"
   },
   {
     "id": "par-174",
@@ -1340,7 +1421,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Naveen Malhotra"
-    ]
+    ],
+    "password": "GT-7059"
   },
   {
     "id": "par-175",
@@ -1356,7 +1438,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Barkha Kapoor"
-    ]
+    ],
+    "password": "GT-7196"
   },
   {
     "id": "par-176",
@@ -1372,7 +1455,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Saurabh Jain"
-    ]
+    ],
+    "password": "GT-7333"
   },
   {
     "id": "par-177",
@@ -1388,7 +1472,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Preeti Bansal"
-    ]
+    ],
+    "password": "GT-7470"
   },
   {
     "id": "par-178",
@@ -1404,7 +1489,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Umesh Goel"
-    ]
+    ],
+    "password": "GT-7607"
   },
   {
     "id": "par-179",
@@ -1420,7 +1506,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kajal Tyagi"
-    ]
+    ],
+    "password": "GT-7744"
   },
   {
     "id": "par-180",
@@ -1436,7 +1523,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Rajeev Tomar"
-    ]
+    ],
+    "password": "GT-7881"
   },
   {
     "id": "par-181",
@@ -1452,7 +1540,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Monika Bhardwaj"
-    ]
+    ],
+    "password": "GT-8018"
   },
   {
     "id": "par-182",
@@ -1468,7 +1557,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Gautam Tripathi"
-    ]
+    ],
+    "password": "GT-8155"
   },
   {
     "id": "par-183",
@@ -1484,7 +1574,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sheetal Shukla"
-    ]
+    ],
+    "password": "GT-8292"
   },
   {
     "id": "par-184",
@@ -1500,7 +1591,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Ankit Dubey"
-    ]
+    ],
+    "password": "GT-8429"
   },
   {
     "id": "par-185",
@@ -1516,7 +1608,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Deepika Rawat"
-    ]
+    ],
+    "password": "GT-8566"
   },
   {
     "id": "par-186",
@@ -1532,7 +1625,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sumit Bisht"
-    ]
+    ],
+    "password": "GT-8703"
   },
   {
     "id": "par-187",
@@ -1548,7 +1642,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Richa Negi"
-    ]
+    ],
+    "password": "GT-8840"
   },
   {
     "id": "par-188",
@@ -1564,7 +1659,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Hemant Chander"
-    ]
+    ],
+    "password": "GT-8977"
   },
   {
     "id": "par-189",
@@ -1580,7 +1676,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Meenakshi Ranjan"
-    ]
+    ],
+    "password": "GT-9114"
   },
   {
     "id": "par-190",
@@ -1596,7 +1693,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Girish Deshmukh"
-    ]
+    ],
+    "password": "GT-9251"
   },
   {
     "id": "par-191",
@@ -1612,7 +1710,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Vandana Sharma"
-    ]
+    ],
+    "password": "GT-9388"
   },
   {
     "id": "par-192",
@@ -1628,7 +1727,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sunil Verma"
-    ]
+    ],
+    "password": "GT-9525"
   },
   {
     "id": "par-193",
@@ -1644,7 +1744,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Renu Gupta"
-    ]
+    ],
+    "password": "GT-9662"
   },
   {
     "id": "par-194",
@@ -1660,7 +1761,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Dinesh Singh"
-    ]
+    ],
+    "password": "GT-9799"
   },
   {
     "id": "par-195",
@@ -1676,7 +1778,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Suman Aggarwal"
-    ]
+    ],
+    "password": "GT-9936"
   },
   {
     "id": "par-196",
@@ -1692,7 +1795,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Mukesh Mishra"
-    ]
+    ],
+    "password": "GT-1073"
   },
   {
     "id": "par-197",
@@ -1708,7 +1812,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Anita Chauhan"
-    ]
+    ],
+    "password": "GT-1210"
   },
   {
     "id": "par-198",
@@ -1724,7 +1829,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Ramesh Tiwari"
-    ]
+    ],
+    "password": "GT-1347"
   },
   {
     "id": "par-199",
@@ -1740,7 +1846,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sunita Yadav"
-    ]
+    ],
+    "password": "GT-1484"
   },
   {
     "id": "par-200",
@@ -1756,7 +1863,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Harish Pandey"
-    ]
+    ],
+    "password": "GT-1621"
   },
   {
     "id": "par-201",
@@ -1772,7 +1880,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sarita Saxena"
-    ]
+    ],
+    "password": "GT-1758"
   },
   {
     "id": "par-202",
@@ -1788,7 +1897,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Naresh Bhatnagar"
-    ]
+    ],
+    "password": "GT-1895"
   },
   {
     "id": "par-203",
@@ -1804,7 +1914,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Babita Chopra"
-    ]
+    ],
+    "password": "GT-2032"
   },
   {
     "id": "par-204",
@@ -1820,7 +1931,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Santosh Malhotra"
-    ]
+    ],
+    "password": "GT-2169"
   },
   {
     "id": "par-205",
@@ -1836,7 +1948,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Laxmi Kapoor"
-    ]
+    ],
+    "password": "GT-2306"
   },
   {
     "id": "par-206",
@@ -1852,7 +1965,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Vinod Jain"
-    ]
+    ],
+    "password": "GT-2443"
   },
   {
     "id": "par-207",
@@ -1868,7 +1982,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Geeta Bansal"
-    ]
+    ],
+    "password": "GT-2580"
   },
   {
     "id": "par-208",
@@ -1884,7 +1999,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Kamal Goel"
-    ]
+    ],
+    "password": "GT-2717"
   },
   {
     "id": "par-209",
@@ -1900,7 +2016,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Sharda Tyagi"
-    ]
+    ],
+    "password": "GT-2854"
   },
   {
     "id": "par-210",
@@ -1916,7 +2033,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Mahesh Tomar"
-    ]
+    ],
+    "password": "GT-2991"
   },
   {
     "id": "par-211",
@@ -1932,7 +2050,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Pushpa Bhardwaj"
-    ]
+    ],
+    "password": "GT-3128"
   },
   {
     "id": "par-212",
@@ -1948,7 +2067,8 @@ export const SEED_PARENTS: Parent[] = [
     ],
     "linkedStudentNames": [
       "Satish Tripathi"
-    ]
+    ],
+    "password": "GT-3265"
   }
 ];
 
@@ -2653,6 +2773,7 @@ export const SEED_STUDENTS: Student[] = [
     "currentAddress": "Sector 62, Near Lal Kuan, Ghaziabad, UP - 201014",
     "busId": "bus-08",
     "busNumber": "Bus #08",
+    "routeId": "rt-08",
     "routeName": "Route 8 – Anand Vihar & Kaushambi Express",
     "parentId": "par-yash",
     "parentName": "Mr. Sanjay Gupta",
@@ -2660,6 +2781,27 @@ export const SEED_STUDENTS: Student[] = [
     "status": "BOARDED",
     "lastCheckin": "08:05 AM (Verified)",
     "avatarUrl": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80",
+    "faceRegistered": true
+  },
+  {
+    "id": "stu-ria-01",
+    "name": "Ria Gupta",
+    "rollNo": "2024B1542099",
+    "grade": "B.Tech",
+    "section": "IT(AI)",
+    "address": "Sector 62, Near Lal Kuan, Ghaziabad, UP - 201014",
+    "permanentAddress": "Sector 62, Near Lal Kuan, Ghaziabad, UP - 201014",
+    "currentAddress": "Sector 62, Near Lal Kuan, Ghaziabad, UP - 201014",
+    "busId": "bus-01",
+    "busNumber": "Bus #01",
+    "routeId": "rt-01",
+    "routeName": "Route 1 – Indirapuram & Vaishali",
+    "parentId": "par-yash",
+    "parentName": "Mr. Sanjay Gupta",
+    "parentPhone": "+91 98112 01001",
+    "status": "BOARDED",
+    "lastCheckin": "07:15 AM (Verified)",
+    "avatarUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80",
     "faceRegistered": true
   },
   {

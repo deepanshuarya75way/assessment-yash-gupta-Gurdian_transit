@@ -22,6 +22,7 @@ import { Bus, Driver, Route, Student } from "../../data/enterpriseMockData";
 import { Badge } from "../ui/Badge";
 import { BusModal } from "./BusModal";
 import { EmergencyTransferModal } from "./EmergencyTransferModal";
+import { ApiClient } from "../../services/apiClient";
 
 interface BusManagementProps {
   buses: Bus[];
@@ -37,6 +38,7 @@ interface BusManagementProps {
     reason: string,
     notifyParents: boolean
   ) => void;
+  onNavigateToRoutes?: () => void;
 }
 
 export const BusManagement: React.FC<BusManagementProps> = ({
@@ -48,12 +50,44 @@ export const BusManagement: React.FC<BusManagementProps> = ({
   onUpdateBus,
   onDeleteBus,
   onEmergencyTransfer,
+  onNavigateToRoutes,
 }) => {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBus, setEditingBus] = useState<Bus | null>(null);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [transferAlertMsg, setTransferAlertMsg] = useState<string | null>(null);
+
+  const handleSimulateRouteDeviation = async (bus: Bus) => {
+    const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const detourLocation = bus.currentLocation || "CISF Camp Bypass Road";
+    
+    // Broadcast high-priority route deviation safety alert
+    await ApiClient.broadcastSos({
+      title: "🚨 Unauthorized Route Deviation Detected",
+      busNumber: bus.busNumber,
+      type: "ROUTE_DEVIATION",
+      severity: "CRITICAL",
+      timestamp: timeStr,
+      resolved: false,
+      description: `Bus ${bus.busNumber} has deviated from designated corridor (${bus.routeName}). Unscheduled stop near ${detourLocation}. Parents & transport controller alerted.`,
+    });
+
+    // Update bus status to DELAYED with updated note
+    onUpdateBus({
+      ...bus,
+      status: "DELAYED",
+      currentLocation: `${detourLocation} (Off-Route Deviation)`,
+    });
+
+    setTransferAlertMsg(
+      `🚨 ROUTE DEVIATION ALERT TRIGGERED: Bus ${bus.busNumber} deviated from authorized route. Alert pushed to parents & admin via WebSocket.`
+    );
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("guardian_data_updated"));
+    }
+  };
 
   const filtered = buses.filter(
     (b) =>
@@ -284,7 +318,7 @@ export const BusManagement: React.FC<BusManagementProps> = ({
 
                   {/* GPS & Camera Statuses */}
                   <td className="px-5 py-3.5 min-w-[160px] whitespace-nowrap">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${
                           bus.gpsStatus === "ONLINE"
@@ -307,11 +341,6 @@ export const BusManagement: React.FC<BusManagementProps> = ({
                         CCTV {bus.cameraStatus || "ONLINE"}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] text-slate-400 mt-1">
-                      <span>{bus.currentSpeed} km/h</span>
-                      <span>•</span>
-                      <span>{bus.batteryFuel}% Fuel</span>
-                    </div>
                   </td>
 
                   {/* Trip Status */}
@@ -333,7 +362,7 @@ export const BusManagement: React.FC<BusManagementProps> = ({
                         : bus.status === "IDLE"
                         ? "Idle Stationed"
                         : bus.status === "DELAYED"
-                        ? "Delayed"
+                        ? "Route Deviated"
                         : bus.status === "UNSERVICEABLE"
                         ? "Unserviceable"
                         : "Maintenance"}
@@ -341,28 +370,38 @@ export const BusManagement: React.FC<BusManagementProps> = ({
                   </td>
 
                   {/* Action Buttons */}
-                  <td className="px-5 py-3.5 text-right min-w-[110px] whitespace-nowrap">
+                  <td className="px-5 py-3.5 text-right min-w-[140px] whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1.5">
+                      {/* Route Deviation Test Trigger */}
+                      <button
+                        onClick={() => handleSimulateRouteDeviation(bus)}
+                        title="Simulate Route Deviation Alert (Unknown Route)"
+                        className="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95"
+                      >
+                        <AlertTriangle className="w-3 h-3 text-rose-600" />
+                        <span>Deviate Alert</span>
+                      </button>
+
                       <button
                         onClick={() => setIsTransferModalOpen(true)}
                         title="Emergency Transfer Route & Passengers"
                         className="p-1.5 hover:bg-amber-50 rounded-lg text-amber-600 hover:text-amber-700 transition-colors"
                       >
-                        <AlertTriangle className="w-4 h-4" />
+                        <AlertTriangle className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleOpenEdit(bus)}
-                        title="Edit Bus"
+                        title="Edit Bus & Route"
                         className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 hover:text-slate-900 transition-colors"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => onDeleteBus(bus.id)}
                         title="Delete Bus"
                         className="p-1.5 hover:bg-rose-50 rounded-lg text-slate-400 hover:text-rose-600 transition-colors"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>

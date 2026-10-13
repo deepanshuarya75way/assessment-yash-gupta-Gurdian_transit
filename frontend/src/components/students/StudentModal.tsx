@@ -207,6 +207,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
         ...prev,
         busId: bus.id,
         busNumber: bus.busNumber,
+        routeId: bus.routeId,
         routeName: bus.routeName,
       }));
     }

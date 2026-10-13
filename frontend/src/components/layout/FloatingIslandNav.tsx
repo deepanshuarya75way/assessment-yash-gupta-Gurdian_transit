@@ -59,18 +59,17 @@ export const FloatingIslandNav: React.FC<FloatingIslandNavProps> = ({
   }
 
   const navItems = [
-    { id: "home", label: "Executive Home", icon: LayoutDashboard },
+    { id: "home", label: "Overview", icon: LayoutDashboard },
     { id: "students", label: "Students", icon: Users },
     { id: "parents", label: "Parents", icon: HeartHandshake },
     { id: "fleet", label: "Buses", icon: BusIcon },
+    { id: "routes", label: "Routes & Stops", icon: Navigation },
     { id: "drivers", label: "Drivers", icon: UserCheck },
-    { id: "routes", label: "Routes", icon: Navigation },
-    { id: "speed-ai", label: "Speed & AI Safety", icon: Gauge, badge: "AI" },
     { id: "attendance", label: "Attendance", icon: CalendarCheck },
-    { id: "tracking", label: "GPS Radar", icon: Compass },
+    { id: "tracking", label: "Live GPS Map", icon: Compass },
     {
       id: "alerts",
-      label: "Safety SOS",
+      label: "Safety & SOS",
       icon: ShieldAlert,
       badge: criticalAlertCount > 0 ? criticalAlertCount.toString() : undefined,
     },

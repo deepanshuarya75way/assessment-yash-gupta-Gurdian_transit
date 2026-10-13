@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { Bus, Student } from "../../data/enterpriseMockData";
 import {
   Compass,
@@ -19,6 +20,18 @@ import {
   ChevronRight,
   AlertTriangle,
 } from "lucide-react";
+
+const LeafletLiveMap = dynamic(() => import("./LeafletLiveMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[420px] w-full rounded-2xl bg-slate-950 flex items-center justify-center text-cyan-400 font-mono text-xs">
+      <div className="flex items-center gap-2">
+        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+        <span>Loading Mapbox HD Live Radar Mesh...</span>
+      </div>
+    </div>
+  ),
+});
 
 interface LiveFleetRadarProps {
   buses: Bus[];
@@ -172,27 +185,27 @@ export const LiveFleetRadar: React.FC<LiveFleetRadarProps> = ({
           <div className="flex items-center gap-2">
             <Compass className="w-5 h-5 text-slate-900" />
             <h2 className="text-xl font-bold text-slate-900">
-              Live Bus GPS Tracker &amp; Route Radar
+              Live Bus GPS Tracker &amp; Map Radar
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              GPS TRACKER ONLINE
+              LIVE TRACKING ONLINE
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Real-time telemetry coordinates for <strong>ABES Business School</strong> (Lal Kuan, NH-09 Ghaziabad) with 1-click Google Maps launcher
+            Real-time live map tracking for all school buses converging to <strong>ABES Campus</strong>
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-mono font-bold flex items-center gap-2 border border-slate-200">
-            <Radio className="w-3.5 h-3.5 text-cyan-600 animate-pulse" />
-            <span>8 Fleets Tracked</span>
+          <div className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold flex items-center gap-2">
+            <BusIcon className="w-4 h-4 text-cyan-400" />
+            <span>{buses.length} Buses in Fleet</span>
           </div>
         </div>
       </div>
 
-      {/* 2. TOP BUS SELECTOR TABS */}
+      {/* 2. FLEET BUS SELECTOR */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
         {buses.map((bus) => {
           const isSelected = bus.id === activeBus.id;
@@ -218,16 +231,16 @@ export const LiveFleetRadar: React.FC<LiveFleetRadarProps> = ({
         })}
       </div>
 
-      {/* 3. HERO LOCATION HUD & 1-CLICK GOOGLE MAPS LAUNCHER */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl border border-slate-700/60 relative overflow-hidden">
+      {/* 3. HERO ACTIVE BUS STATUS CARD */}
+      <div className="p-6 rounded-3xl bg-slate-900 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-extrabold bg-cyan-500 text-slate-950 uppercase">
+                <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-extrabold bg-cyan-400 text-slate-950 uppercase">
                   {activeRouteData?.routeCode || "RT-01"}
                 </span>
-                <span className="text-xs text-slate-400 font-bold">
+                <span className="text-xs text-slate-400 font-semibold">
                   {activeBus.routeName}
                 </span>
               </div>
@@ -236,45 +249,40 @@ export const LiveFleetRadar: React.FC<LiveFleetRadarProps> = ({
               </h3>
               <p className="text-sm font-semibold text-slate-300 mt-1 flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                <span>Current Location: <strong className="text-white">{activeBus.currentLocation}</strong></span>
+                <span>Current Location: <strong className="text-white">{activeBus.currentLocation || activeBus.nextStop}</strong></span>
               </p>
             </div>
 
-            {/* Latitude & Longitude Digital Box */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              <div className="px-3.5 py-2 rounded-xl bg-black/40 border border-white/10 font-mono text-xs">
-                <span className="text-slate-400 block text-[10px]">LATITUDE (GPS)</span>
-                <span className="font-extrabold text-cyan-300 text-sm">{latitude.toFixed(6)}° N</span>
+            {/* Key Information Badges */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-1">
+              <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-xs flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-cyan-300" />
+                <span>Next Stop: <strong className="text-white">{activeBus.nextStop}</strong> ({activeBus.eta})</span>
               </div>
 
-              <div className="px-3.5 py-2 rounded-xl bg-black/40 border border-white/10 font-mono text-xs">
-                <span className="text-slate-400 block text-[10px]">LONGITUDE (GPS)</span>
-                <span className="font-extrabold text-cyan-300 text-sm">{longitude.toFixed(6)}° E</span>
+              <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-xs flex items-center gap-2">
+                <BusIcon className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Occupancy: <strong className="text-white">{activeBus.insideBusCount || activeStudents.length || 0} / {activeBus.capacity || 40} Kids</strong></span>
               </div>
 
-              <div className="px-3.5 py-2 rounded-xl bg-black/40 border border-white/10 font-mono text-xs">
-                <span className="text-slate-400 block text-[10px]">SPEED &amp; STATUS</span>
-                <span className="font-extrabold text-emerald-400 text-sm">{activeBus.currentSpeed} km/h • ON ROUTE</span>
-              </div>
-
-              <div className="px-3.5 py-2 rounded-xl bg-black/40 border border-white/10 font-mono text-xs">
-                <span className="text-slate-400 block text-[10px]">NEXT STOP &amp; ETA</span>
-                <span className="font-bold text-slate-200 text-xs">{activeBus.nextStop} ({activeBus.eta})</span>
+              <div className="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Trip Active</span>
               </div>
             </div>
           </div>
 
-          {/* Big Open in Google Maps Action Button */}
+          {/* Direct Navigation Action */}
           <div className="flex flex-col sm:flex-row lg:flex-col items-stretch lg:items-end gap-3 flex-shrink-0">
             <a
               href={googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
+              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
             >
-              <MapPin className="w-5 h-5 text-slate-950" />
-              <span>Open {activeBus.busNumber} in Google Maps</span>
-              <ExternalLink className="w-4 h-4 text-slate-950" />
+              <MapPin className="w-4 h-4 text-slate-950" />
+              <span>Open in Google Maps</span>
+              <ExternalLink className="w-3.5 h-3.5 text-slate-950" />
             </a>
 
             <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
@@ -289,89 +297,82 @@ export const LiveFleetRadar: React.FC<LiveFleetRadarProps> = ({
         </div>
       </div>
 
-      {/* 4. SCHEMATIC METRO-STYLE ROUTE MAP (ALL 8 BUS LINES CONVERGING TO ABES CAMPUS) */}
+      {/* 4. INTERACTIVE LIVE GPS MAP */}
+      <div className="clean-card rounded-3xl p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div className="flex items-center gap-2">
+              <Compass className="w-5 h-5 text-cyan-600" />
+              <h3 className="font-extrabold text-slate-900 text-base">
+                Interactive Fleet GPS Map
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Live moving bus markers and route stops
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-500">Tracking:</span>
+            <span className="px-3 py-1 rounded-xl bg-slate-900 text-white font-extrabold text-xs">
+              {activeBus.busNumber} • {activeBus.licensePlate}
+            </span>
+          </div>
+        </div>
+
+        {/* Map Canvas */}
+        <div className="h-[440px] w-full rounded-2xl overflow-hidden border border-slate-200 relative shadow-inner bg-slate-950">
+          <LeafletLiveMap
+            buses={buses}
+            selectedBusId={selectedBusId}
+            onSelectBus={(id) => setSelectedBusId(id)}
+          />
+        </div>
+      </div>
+
+      {/* 5. ROUTE CORRIDOR STOPS PROGRESSION */}
       <div className="clean-card rounded-2xl p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
             <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
               <Navigation className="w-4 h-4 text-slate-800" />
-              <span>ABES Business School Transit Corridors (Lal Kuan, Ghaziabad)</span>
+              <span>Route Stops Sequence ({activeBus.busNumber})</span>
             </h3>
             <p className="text-xs text-slate-500">
-              All 8 active bus transit lines across Delhi-NCR converging into ABES Business School Central Campus
+              Scheduled pickup stops and expected timings for {activeBus.routeName}
             </p>
-          </div>
-
-          {/* Campus Coordinates Badge */}
-          <div className="px-3 py-1.5 rounded-xl bg-slate-900 text-cyan-300 font-mono text-xs font-bold flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Campus: 28.6366° N, 77.4484° E</span>
           </div>
         </div>
 
-        {/* Metro Visual Network Lines Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(FLEET_ROUTE_MAPS).map(([busId, routeData]) => {
-            const busObj = buses.find((b) => b.id === busId);
-            if (!busObj) return null;
-            const isSelected = busObj.id === activeBus.id;
-
-            return (
-              <div
-                key={busId}
-                onClick={() => setSelectedBusId(busObj.id)}
-                className={`p-4 rounded-2xl cursor-pointer transition-all border ${
-                  isSelected
-                    ? "bg-slate-900 text-white border-slate-900 shadow-lg ring-2 ring-slate-900/30"
-                    : "bg-slate-50/80 hover:bg-slate-100 border-slate-200 text-slate-800"
-                }`}
-              >
-                {/* Route Header */}
-                <div className="flex items-center justify-between mb-3 pb-2 border-b border-black/10">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-3 h-3 rounded-lg flex-shrink-0"
-                      style={{ backgroundColor: routeData.color }}
-                    />
-                    <span className="font-extrabold text-xs">{busObj.busNumber}</span>
-                  </div>
-                  <span className={`font-mono text-[10px] font-bold ${isSelected ? "text-cyan-300" : "text-slate-600"}`}>
-                    {busObj.currentSpeed} km/h
-                  </span>
-                </div>
-
-                {/* Stops Timeline */}
-                <div className="space-y-2 relative pl-5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-300/60">
-                  {routeData.stops.map((stop, idx) => (
-                    <div key={idx} className="relative flex items-center justify-between text-[11px]">
-                      <div
-                        className={`absolute -left-5 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                          stop.passed
-                            ? "bg-cyan-400 border-cyan-500"
-                            : isSelected
-                            ? "bg-slate-800 border-slate-600"
-                            : "bg-white border-slate-300"
-                        }`}
-                      >
-                        {stop.passed && <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />}
-                      </div>
-
-                      <span className={`font-semibold truncate max-w-[140px] ${
-                        isSelected
-                          ? stop.passed ? "text-cyan-200 font-bold" : "text-slate-300"
-                          : stop.passed ? "text-slate-900 font-bold" : "text-slate-600"
-                      }`}>
-                        {stop.name}
-                      </span>
-                      <span className={`font-mono text-[9px] ${isSelected ? "text-slate-400" : "text-slate-400"}`}>
-                        {stop.time}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+        {/* Stops Sequence */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {(activeRouteData?.stops || []).map((stop, idx) => (
+            <div
+              key={idx}
+              className={`p-4 rounded-2xl border transition-all ${
+                stop.passed
+                  ? "bg-slate-900 text-white border-slate-800"
+                  : "bg-slate-50 border-slate-200 text-slate-700"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                  stop.passed ? "bg-cyan-400 text-slate-950" : "bg-slate-200 text-slate-700"
+                }`}>
+                  Stop {idx + 1}
+                </span>
+                <span className="text-[10px] font-mono font-bold">
+                  {stop.time}
+                </span>
               </div>
-            );
-          })}
+              <h4 className="font-bold text-xs leading-snug">
+                {stop.name}
+              </h4>
+              <p className={`text-[10px] mt-1 font-semibold ${stop.passed ? "text-cyan-300" : "text-slate-400"}`}>
+                {stop.passed ? "✓ Passed / Current" : "Upcoming Scheduled"}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

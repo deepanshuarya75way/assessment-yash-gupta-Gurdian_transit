@@ -14,7 +14,11 @@ import {
   ShieldAlert,
   Users,
   GraduationCap,
+  KeyRound,
+  Copy,
+  Check,
 } from "lucide-react";
+
 import { Badge } from "../ui/Badge";
 import { ParentModal } from "./ParentModal";
 
@@ -37,6 +41,7 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
   const [selectedRelation, setSelectedRelation] = useState("ALL");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<Parent | null>(null);
+  const [copiedParentId, setCopiedParentId] = useState<string | null>(null);
 
   const getLinkedStudents = (parent: Parent) => {
     return students.filter(
@@ -45,6 +50,15 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
         (s.parentName && s.parentName.trim().toLowerCase() === parent.name.trim().toLowerCase()) ||
         (parent.linkedStudentIds && parent.linkedStudentIds.includes(s.id))
     );
+  };
+
+  const handleCopyParentCredentials = (parent: Parent) => {
+    const userIdentifier = parent.email || parent.phone;
+    const pass = parent.password || "parent123";
+    const textToCopy = `*Guardian Transit AI - Parent Portal Credentials*\n👤 Login User: ${userIdentifier}\n🔑 Password/PIN: ${pass}\n🔗 Portal: http://localhost:3000/login`;
+    navigator.clipboard.writeText(textToCopy);
+    setCopiedParentId(parent.id);
+    setTimeout(() => setCopiedParentId(null), 2000);
   };
 
   const filteredParents = parents.filter((p) => {
@@ -85,7 +99,7 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Manage guardian emergency contacts, SMS alert phone numbers, and linked students from the school database
+            Manage guardian portal credentials, SMS alert phone numbers, and linked students from the school database
           </p>
         </div>
 
@@ -132,12 +146,12 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
             <thead className="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200">
               <tr>
                 <th className="px-5 py-3.5 min-w-[180px]">Parent Profile</th>
-                <th className="px-5 py-3.5 min-w-[130px] whitespace-nowrap">Relation</th>
-                <th className="px-5 py-3.5 min-w-[220px]">Linked Student(s)</th>
+                <th className="px-5 py-3.5 min-w-[120px] whitespace-nowrap">Relation</th>
+                <th className="px-5 py-3.5 min-w-[200px]">Linked Student(s)</th>
                 <th className="px-5 py-3.5 min-w-[180px] whitespace-nowrap">Primary Phone &amp; Email</th>
-                <th className="px-5 py-3.5 min-w-[200px]">Residential Address</th>
-                <th className="px-5 py-3.5 min-w-[160px] whitespace-nowrap">Emergency Contact</th>
-                <th className="px-5 py-3.5 min-w-[100px] text-right whitespace-nowrap">Actions</th>
+                <th className="px-5 py-3.5 min-w-[180px]">Residential Address</th>
+                <th className="px-5 py-3.5 min-w-[190px] whitespace-nowrap">Portal Credentials</th>
+                <th className="px-5 py-3.5 min-w-[90px] text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-xs">
@@ -154,7 +168,7 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
                     </td>
 
                     {/* Relation Badge */}
-                    <td className="px-5 py-3.5 min-w-[130px] whitespace-nowrap">
+                    <td className="px-5 py-3.5 min-w-[120px] whitespace-nowrap">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${
                           parent.relation === "Mother"
@@ -168,8 +182,8 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
                       </span>
                     </td>
 
-                    {/* Linked Students Tags (Single Source of Truth) */}
-                    <td className="px-5 py-3.5 min-w-[220px]">
+                    {/* Linked Students Tags */}
+                    <td className="px-5 py-3.5 min-w-[200px]">
                       <div className="flex flex-wrap gap-1.5 max-w-xs">
                         {linkedStudents.length > 0 ? (
                           linkedStudents.map((s) => (
@@ -205,26 +219,48 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
                     </td>
 
                     {/* Address */}
-                    <td className="px-5 py-3.5 min-w-[200px] text-slate-600">
+                    <td className="px-5 py-3.5 min-w-[180px] text-slate-600">
                       <span className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                        <span className="truncate max-w-[200px]">{parent.address}</span>
+                        <span className="truncate max-w-[180px]">{parent.address}</span>
                       </span>
                     </td>
 
-                    {/* Emergency Contact */}
-                    <td className="px-5 py-3.5 min-w-[160px] whitespace-nowrap">
-                      <span className="font-mono text-slate-900 font-bold bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 text-[11px]">
-                        {parent.emergencyContact}
-                      </span>
+                    {/* Portal Credentials (Replaces Emergency Number on Main View) */}
+                    <td className="px-5 py-3.5 min-w-[190px] whitespace-nowrap">
+                      <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200 max-w-[190px]">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <KeyRound className="w-3 h-3 text-cyan-600 flex-shrink-0" />
+                            <span className="font-mono text-[11px] font-bold text-slate-800">
+                              {parent.password || "parent123"}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 block truncate max-w-[120px] mt-0.5">
+                            User: {parent.email ? parent.email.split("@")[0] : parent.phone}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyParentCredentials(parent)}
+                          title="Copy Login Credentials for Parent"
+                          className="p-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 transition-all shadow-xs"
+                        >
+                          {copiedParentId === parent.id ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5 text-slate-500" />
+                          )}
+                        </button>
+                      </div>
                     </td>
 
                     {/* Actions */}
-                    <td className="px-5 py-3.5 text-right min-w-[100px] whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-right min-w-[90px] whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => handleOpenEdit(parent)}
-                          title="Edit Parent"
+                          title="Edit Parent & Credentials"
                           className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 hover:text-slate-900 transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -252,7 +288,7 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
         </div>
       </div>
 
-      {/* Add / Edit Parent Modal with DB Student Picker */}
+      {/* Add / Edit Parent Modal with DB Student Picker & Credentials Generator */}
       <ParentModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -271,6 +307,7 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
               occupation: data.occupation || "",
               linkedStudentIds: data.linkedStudentIds || [],
               linkedStudentNames: data.linkedStudentNames || [],
+              password: data.password || "parent123",
             };
             onAddParent(newParent);
           }
@@ -281,3 +318,4 @@ export const ParentManagement: React.FC<ParentManagementProps> = ({
     </div>
   );
 };
+

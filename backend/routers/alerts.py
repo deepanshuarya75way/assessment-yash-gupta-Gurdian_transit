@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from ..models.database import AlertModel, get_db
 from ..schemas.schemas import AlertCreate, AlertResponse
+from .ws import ws_manager
 
 router = APIRouter(prefix="/alerts", tags=["Safety Alerts & SOS"])
 
@@ -26,9 +27,32 @@ async def get_all_alerts(db: AsyncSession = Depends(get_db)):
         for a in alerts
     ]
 
+import uuid
+
+# In-memory cooldown cache: (title, bus_number, type) -> last_timestamp
+_recent_alerts_cache = {}
+
 @router.post("/broadcast")
 async def broadcast_alert(alert: AlertCreate, db: AsyncSession = Depends(get_db)):
-    alert_id = f"alt-{int(time.time())}"
+    now_ts = time.time()
+    dedup_key = (alert.title.strip(), (alert.busNumber or "").strip(), alert.type)
+
+    # If an identical alert was broadcasted within the last 10 seconds, skip duplicate DB insert and return
+    if dedup_key in _recent_alerts_cache and (now_ts - _recent_alerts_cache[dedup_key]) < 10:
+        return {
+            "id": f"cached-{int(now_ts)}",
+            "title": alert.title,
+            "description": alert.description,
+            "severity": alert.severity,
+            "busNumber": alert.busNumber,
+            "timestamp": alert.timestamp or time.strftime("%I:%M %p"),
+            "type": alert.type,
+            "resolved": False,
+        }
+
+    _recent_alerts_cache[dedup_key] = now_ts
+
+    alert_id = f"alt-{int(time.time()*1000)}-{uuid.uuid4().hex[:6]}"
     time_str = alert.timestamp or time.strftime("%I:%M %p")
 
     new_alert = AlertModel(
@@ -44,7 +68,7 @@ async def broadcast_alert(alert: AlertCreate, db: AsyncSession = Depends(get_db)
     db.add(new_alert)
     await db.commit()
 
-    return {
+    alert_dict = {
         "id": new_alert.id,
         "title": new_alert.title,
         "description": new_alert.description,
@@ -54,6 +78,20 @@ async def broadcast_alert(alert: AlertCreate, db: AsyncSession = Depends(get_db)
         "type": new_alert.type,
         "resolved": new_alert.resolved,
     }
+
+    # Instant Real-time WebSocket Broadcast
+    try:
+        await ws_manager.broadcast_all({
+            "type": "SAFETY_ALERT",
+            "title": alert_dict["title"],
+            "busNumber": alert_dict.get("busNumber"),
+            "severity": alert_dict.get("severity"),
+            "data": alert_dict,
+        })
+    except Exception as e:
+        print(f"[WebSocket Alert Broadcast Error]: {e}")
+
+    return alert_dict
 
 @router.put("/{alert_id}/resolve")
 async def resolve_alert(alert_id: str, db: AsyncSession = Depends(get_db)):

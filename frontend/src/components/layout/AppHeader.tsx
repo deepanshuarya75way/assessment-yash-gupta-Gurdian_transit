@@ -11,9 +11,12 @@ import {
   ShieldAlert,
   CheckCircle2,
   ArrowRight,
+  LogOut,
 } from "lucide-react";
 import { SafetyAlert } from "../../data/enterpriseMockData";
 import { NavTabType } from "./FloatingIslandNav";
+import { useAuth } from "../../context/AuthContext";
+
 
 interface AppHeaderProps {
   activeTab: NavTabType;
@@ -30,6 +33,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   criticalAlertCount,
   alerts = [],
 }) => {
+  const { user, logout } = useAuth();
   const [time, setTime] = useState("");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -272,18 +276,28 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           <span className="whitespace-nowrap">BROADCAST SOS</span>
         </button>
 
-        {/* D. User Profile: Rendered ONLY on Home Page */}
-        {isHome && (
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200 hidden md:flex">
-            <div className="w-8 h-8 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-              AD
-            </div>
-            <div className="text-left">
-              <p className="text-xs font-bold text-slate-900 leading-tight">School Admin</p>
-              <p className="text-[10px] text-slate-500 font-medium">Chief Dispatcher</p>
-            </div>
+        {/* D. User Profile & Logout */}
+        <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+          <div className="w-8 h-8 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+            {user?.name ? user.name.slice(0, 2).toUpperCase() : "AD"}
           </div>
-        )}
+          <div className="text-left hidden md:block">
+            <p className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[120px]">
+              {user?.name || "School Admin"}
+            </p>
+            <p className="text-[10px] text-slate-500 font-medium">
+              {user?.role === "ADMIN" ? "Chief Admin" : "User Portal"}
+            </p>
+          </div>
+          <button
+            onClick={() => logout()}
+            className="p-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 hover:border-rose-200 transition-all text-xs flex items-center gap-1"
+            title="Sign Out / Switch Account"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline text-[11px] font-semibold">Logout</span>
+          </button>
+        </div>
       </div>
     </header>
   );

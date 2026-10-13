@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .models.database import init_db, AsyncSessionLocal
 from .models.seed_data import seed_database_if_empty
 
-from .routers import students, buses, parents, routes, attendance, alerts, telemetry, biometrics
+from .routers import students, buses, parents, routes, attendance, alerts, telemetry, biometrics, ws
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,6 +46,8 @@ app.include_router(attendance.router, prefix="/api/v1")
 app.include_router(alerts.router, prefix="/api/v1")
 app.include_router(telemetry.router, prefix="/api/v1")
 app.include_router(biometrics.router, prefix="/api/v1")
+app.include_router(ws.router, prefix="/api/v1")
+app.include_router(ws.router)
 
 @app.get("/")
 def root():

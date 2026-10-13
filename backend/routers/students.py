@@ -84,29 +84,43 @@ async def create_student(student: StudentCreate, db: AsyncSession = Depends(get_
         db.add(db_student)
 
     # Sync with Parent record
-    parent_stmt = select(ParentModel).filter(ParentModel.id == student.parentId)
-    parent_res = await db.execute(parent_stmt)
-    parent = parent_res.scalar_one_or_none()
+    parent = None
+    if student.parentId:
+        parent_stmt = select(ParentModel).filter(ParentModel.id == student.parentId)
+        parent_res = await db.execute(parent_stmt)
+        parent = parent_res.scalar_one_or_none()
+
+    if not parent and student.parentName and student.parentName.strip() and student.parentName != "No Parent Assigned":
+        parent_stmt = select(ParentModel).filter(ParentModel.name.ilike(student.parentName.strip()))
+        parent_res = await db.execute(parent_stmt)
+        parent = parent_res.scalar_one_or_none()
 
     if parent:
+        db_student.parent_id = parent.id
+        db_student.parent_name = parent.name
+        if not db_student.parent_phone:
+            db_student.parent_phone = parent.phone
         current_linked = json.loads(parent.linked_student_ids) if parent.linked_student_ids else []
         if db_student.id not in current_linked:
             current_linked.append(db_student.id)
             parent.linked_student_ids = json.dumps(current_linked)
-    else:
+    elif student.parentName and student.parentName.strip() and student.parentName != "No Parent Assigned":
         # Create parent if new
+        new_parent_id = student.parentId or f"par-{int(time.time())}"
         new_parent = ParentModel(
-            id=student.parentId or f"par-{int(time.time())}",
-            name=student.parentName,
+            id=new_parent_id,
+            name=student.parentName.strip(),
             relation="Father",
-            email=f"{student.parentName.lower().replace(' ', '.')}@example.com",
-            phone=student.parentPhone,
-            address=student.address,
-            emergency_contact=student.parentPhone,
+            email=f"{student.parentName.strip().lower().replace(' ', '.')}@example.com",
+            phone=student.parentPhone or "+91 98765 43210",
+            address=student.address or "Delhi NCR",
+            emergency_contact=student.parentPhone or "+91 98765 43210",
             occupation="Guardian",
             linked_student_ids=json.dumps([db_student.id]),
+            password="parent123",
         )
         db.add(new_parent)
+        db_student.parent_id = new_parent.id
 
     await db.commit()
     await db.refresh(db_student)

@@ -75,11 +75,19 @@ export const LeafletLiveMap: React.FC<LeafletLiveMapProps> = ({
     "bus-04": 2,
   });
 
-  // Tile URL Map
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
+
+  // Tile URL Map (Mapbox HD Vector & Satellite with CartoDB/OSM fallback)
   const tileUrls = {
-    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    streets: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    dark: mapboxToken
+      ? `https://api.mapbox.com/styles/v1/mapbox/navigation-night-v1/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`
+      : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    streets: mapboxToken
+      ? `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    satellite: mapboxToken
+      ? `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`
+      : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   };
 
   // Initialize Map
@@ -99,6 +107,7 @@ export const LeafletLiveMap: React.FC<LeafletLiveMapProps> = ({
     const tileLayer = L.tileLayer(tileUrls.dark, {
       maxZoom: 19,
       subdomains: "abcd",
+      tileSize: mapboxToken ? 256 : 256,
     }).addTo(map);
     tileLayerRef.current = tileLayer;
 
@@ -352,3 +361,5 @@ export const LeafletLiveMap: React.FC<LeafletLiveMapProps> = ({
     </div>
   );
 };
+
+export default LeafletLiveMap;

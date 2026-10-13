@@ -66,6 +66,8 @@ class ParentModel(Base):
     emergency_contact = Column(String, nullable=False)
     occupation = Column(String, nullable=False)
     linked_student_ids = Column(Text, default="[]") # JSON list
+    password = Column(String, default="parent123", nullable=True) # Parent Portal Access Password
+
 
 class BusModel(Base):
     __tablename__ = "buses"

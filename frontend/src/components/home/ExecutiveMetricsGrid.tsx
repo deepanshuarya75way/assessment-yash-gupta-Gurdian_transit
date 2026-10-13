@@ -132,35 +132,27 @@ export const ExecutiveMetricsGrid: React.FC<ExecutiveMetricsGridProps> = ({
           </div>
         </div>
 
-        {/* Card 4: Advanced Speed Telematics */}
+        {/* Card 4: On-Time Schedule & Transit Corridors */}
         <div className="clean-card clean-card-hover rounded-2xl p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-start justify-between mb-2">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Speed Radar Telematics
+                Transit Schedule
               </span>
-              <span
-                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
-                  overspeedingBuses.length > 0
-                    ? "bg-rose-50 text-rose-700 border-rose-200"
-                    : "bg-purple-50 text-purple-700 border-purple-200"
-                }`}
-              >
-                Limit: 45 km/h
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-50 text-purple-700 border border-purple-200">
+                8 Routes
               </span>
             </div>
             <h3 className="text-2xl font-extrabold text-slate-900">
-              {overspeedingBuses.length > 0 ? "1 Bus Speeding" : "41.5 km/h Avg"}
+              98.4% On-Time
             </h3>
             <p className="text-xs text-slate-600 font-semibold mt-1">
-              {overspeedingBuses.length > 0
-                ? "Bus #21 @ 52 km/h (Janakpuri flyover)"
-                : "All buses operating within 45 km/h limit"}
+              All 8 transit lines operating on designated corridors
             </p>
           </div>
           <div className="pt-3 border-t border-slate-100 mt-3 text-[11px] text-slate-500 flex justify-between">
-            <span>School Zone Geofence</span>
-            <span className="font-bold text-purple-700">Live GPS Monitored</span>
+            <span>Route Geofence</span>
+            <span className="font-bold text-purple-700">Protected &amp; Monitored</span>
           </div>
         </div>
       </div>

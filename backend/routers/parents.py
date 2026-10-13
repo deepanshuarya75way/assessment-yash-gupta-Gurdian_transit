@@ -20,7 +20,7 @@ async def get_all_parents(db: AsyncSession = Depends(get_db)):
         # Single Source of Truth: Find all students belonging to this parent
         filter_conditions = [
             StudentModel.parent_id == p.id,
-            StudentModel.parent_name == p.name
+            StudentModel.parent_name.ilike(p.name.strip())
         ]
         if stored_ids:
             filter_conditions.append(StudentModel.id.in_(stored_ids))
@@ -42,6 +42,7 @@ async def get_all_parents(db: AsyncSession = Depends(get_db)):
             "occupation": p.occupation,
             "linkedStudentIds": student_ids,
             "linkedStudentNames": student_names,
+            "password": p.password or "parent123",
         })
     return out
 
@@ -50,12 +51,14 @@ async def create_parent(parent: ParentCreate, db: AsyncSession = Depends(get_db)
     parent_id = parent.id or f"par-{int(time.time())}"
     student_ids = parent.linkedStudentIds or []
 
-    res = await db.execute(
-        select(ParentModel).filter(
-            or_(ParentModel.id == parent_id, ParentModel.name == parent.name)
-        )
-    )
-    existing = res.scalar_one_or_none()
+    existing = None
+    if parent.id:
+        res = await db.execute(select(ParentModel).filter(ParentModel.id == parent.id))
+        existing = res.scalar_one_or_none()
+    
+    if not existing:
+        res = await db.execute(select(ParentModel).filter(ParentModel.name == parent.name))
+        existing = res.scalar_one_or_none()
 
     if existing:
         existing.name = parent.name
@@ -66,6 +69,8 @@ async def create_parent(parent: ParentCreate, db: AsyncSession = Depends(get_db)
         existing.emergency_contact = parent.emergencyContact
         existing.occupation = parent.occupation
         existing.linked_student_ids = json.dumps(student_ids)
+        if parent.password:
+            existing.password = parent.password
         new_parent = existing
     else:
         new_parent = ParentModel(
@@ -78,6 +83,7 @@ async def create_parent(parent: ParentCreate, db: AsyncSession = Depends(get_db)
             emergency_contact=parent.emergencyContact,
             occupation=parent.occupation,
             linked_student_ids=json.dumps(student_ids),
+            password=parent.password or "parent123",
         )
         db.add(new_parent)
 
@@ -117,6 +123,7 @@ async def create_parent(parent: ParentCreate, db: AsyncSession = Depends(get_db)
         "occupation": new_parent.occupation,
         "linkedStudentIds": [s.id for s in students],
         "linkedStudentNames": [s.name for s in students],
+        "password": new_parent.password or "parent123",
     }
 
 @router.delete("/{parent_id}")

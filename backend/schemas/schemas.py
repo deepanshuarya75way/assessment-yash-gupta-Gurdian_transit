@@ -37,6 +37,7 @@ class ParentBase(BaseModel):
     occupation: str = "Guardian"
     linkedStudentIds: List[str] = []
     linkedStudentNames: List[str] = []
+    password: Optional[str] = "parent123"
 
 class ParentCreate(ParentBase):
     id: Optional[str] = None

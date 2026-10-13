@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from ..models.database import AttendanceModel, StudentModel, BusModel, get_db
 from ..schemas.schemas import AttendanceCreate, AttendanceResponse
+from .ws import ws_manager
 
 router = APIRouter(prefix="/attendance", tags=["Attendance"])
 
@@ -32,10 +33,12 @@ async def get_all_attendance(db: AsyncSession = Depends(get_db)):
         for a in records
     ]
 
+import uuid
+
 @router.post("/verify", status_code=status.HTTP_201_CREATED)
 async def record_attendance(rec: AttendanceCreate, db: AsyncSession = Depends(get_db)):
     timestamp_str = rec.timestamp or time.strftime("%I:%M %p")
-    att_id = f"att-{int(time.time())}"
+    att_id = f"att-{int(time.time()*1000)}-{uuid.uuid4().hex[:6]}"
 
     new_rec = AttendanceModel(
         id=att_id,
@@ -77,7 +80,7 @@ async def record_attendance(rec: AttendanceCreate, db: AsyncSession = Depends(ge
 
     await db.commit()
 
-    return {
+    att_payload = {
         "id": new_rec.id,
         "studentId": new_rec.student_id,
         "studentName": new_rec.student_name,
@@ -93,3 +96,22 @@ async def record_attendance(rec: AttendanceCreate, db: AsyncSession = Depends(ge
         "shift": new_rec.shift,
         "stopLocation": new_rec.stop_location,
     }
+
+    # Instant Real-Time WebSocket Push to Parent and Admin
+    try:
+        parent_id = student.parent_id if student else None
+        event_title = f"{new_rec.student_name} Boarded {new_rec.bus_number}" if new_rec.event_type == "BOARD" else f"{new_rec.student_name} Deboarded {new_rec.bus_number}"
+        message = {
+            "type": "ATTENDANCE_EVENT",
+            "title": event_title,
+            "parentId": parent_id,
+            "data": att_payload,
+        }
+        if parent_id:
+            await ws_manager.send_to_parent(parent_id, message)
+        else:
+            await ws_manager.broadcast_all(message)
+    except Exception as e:
+        print(f"[WebSocket Attendance Broadcast Error]: {e}")
+
+    return att_payload

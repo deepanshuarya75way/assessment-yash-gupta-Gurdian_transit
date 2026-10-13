@@ -397,7 +397,16 @@ export default function MobileBusTerminalPage() {
   }, [cameraActive, activeResult, activePersona, stationedBusNumber]);
 
   // Simulate Instant Intruder Alert
+  const lastIntruderAlertRef = useRef<number>(0);
+
   const triggerIntruderAlert = () => {
+    const now = Date.now();
+    if (now - lastIntruderAlertRef.current < 15000) {
+      console.log("Intruder alert cooldown active. Skipping rapid broadcast.");
+      return;
+    }
+    lastIntruderAlertRef.current = now;
+
     const nowStr = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
     const intruderResult: VerificationResult = {
       status: "UNAUTHORIZED",
@@ -431,7 +440,7 @@ export default function MobileBusTerminalPage() {
     ]);
 
     ApiClient.broadcastSos({
-      title: "Unauthorized Boarding Attempt",
+      title: "🚨 Unauthorized Person Detected",
       busNumber: stationedBusNumber,
       type: "UNAUTHORIZED_PERSON",
       severity: "CRITICAL",
