@@ -4,6 +4,8 @@ from typing import AsyncGenerator
 from sqlalchemy import Column, String, Integer, Float, Boolean, Text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import DateTime
+from datetime import datetime, timezone
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./guardian_transit.db")
 
@@ -53,6 +55,28 @@ class StudentModel(Base):
     avatar_url = Column(String, nullable=False)
     face_registered = Column(Boolean, default=True)
     face_vector = Column(Text, nullable=True) # JSON serialized 512-D float vector
+
+class StudentBusTrabsferModel(base):
+    __tablename__ = "student_bus_transfers"
+    id = Column(String, primary_key = True, index = True)
+    student_id = Column(String, nullable=False, index=True)
+
+    old_bus_id = Column(String, nullable=False)
+    old_bus_number = Column(String, nullable=False)
+    old_route_name = Column(String, nullable=False)
+
+    new_bus_id = Column(String, nullable=False)
+    new_bus_number = Column(String, nullable=False)
+    new_route_name = Column(String, nullable=False)
+
+    reason = Column(Text, nullable=True)
+    timestamp = Column(
+        DateTime(timezone =True),
+        nullable=False,
+        default=lambda:datetime.now(timezone.utc),
+    )
+
+
 
 class ParentModel(Base):
     __tablename__ = "parents"

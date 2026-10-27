@@ -43,6 +43,23 @@ export class ApiClient {
     }
   }
 
+  static async updateStudent(
+    studentId: string,
+    student: student
+  ): Promise<Student | null> {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/students`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(student),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
   static async deleteStudent(studentId: string): Promise<boolean> {
     try {
       const res = await fetch(`${getApiBaseUrl()}/students/${studentId}`, {

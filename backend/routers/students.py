@@ -144,6 +144,46 @@ async def create_student(student: StudentCreate, db: AsyncSession = Depends(get_
         "faceRegistered": db_student.face_registered,
     }
 
+@router.put(f"/{student_id}")
+async def update_student(
+    student_id: str,
+    student: StudentCreate,
+    db: AsynSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(StudentModel).where(StudentModel.id == student_id)
+    )
+    existing = result.scalar_one_or_name()
+
+    if not existing:
+        raise HTTPException(status_code = 404, detail = "student not found")
+    
+    existing.name = student.name
+    existing.roll_no = student.rollNo
+    existing.grade = student.grade
+    existing.section = student.section
+    existing.address = student.address
+    existing.bus_id = student.busId
+    existing.bus_number = student.busNumber
+    existing.route_name = student.routeName
+    existing.parent_id = student.parentId
+    existing.parent_name = student.parentName
+    existing.parent_phone = student.parentPhone
+    existing.avatar_url = student.avatarUrl
+
+    if student.faceVector:
+        existing.face_vector = json.dumps(student.faceVector)
+
+    await db.commit()
+    await.db.refresh(existing)
+
+    return {"message": "Student updated successfully", "id": existing.id}
+
+    
+
+
+
+
 @router.delete("/{student_id}")
 async def delete_student(student_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(StudentModel).filter(StudentModel.id == student_id))
