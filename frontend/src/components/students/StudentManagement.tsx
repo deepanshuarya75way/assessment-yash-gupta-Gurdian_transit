@@ -18,6 +18,8 @@ import {
   CheckCircle2,
   CreditCard,
   Sparkles,
+  History,
+  X,
   Bus as BusIcon,
 } from "lucide-react";
 import { Badge } from "../ui/Badge";
@@ -57,6 +59,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
   const [autoFilledOcrData, setAutoFilledOcrData] = useState<ExtractedIdCardData | null>(null);
   const [enrollingStudent, setEnrollingStudent] = useState<Student | null>(null);
   const [isOcrScannerOpen, setIsOcrScannerOpen] = useState(false);
+  const [timelineStudent, setTimelineStudent] = useState<Student | null>(null);
 
   // Filter logic
   const filteredStudents = students.filter((s) => {
@@ -282,6 +285,14 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
+                      <button
+                        onClick={() => setTimelineStudent(student)}
+                        title="View Bus Transfer History"
+                        className="p-1.5 hover:bg-rose-50 rounded-lg text-slate-400 hover:text-rose-600 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+
                     </div>
                   </td>
                 </tr>
@@ -335,6 +346,7 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
         autoFilledOcrData={autoFilledOcrData}
         buses={buses}
         parents={parents}
+        students = {students}
       />
 
       {/* Biometric Face Scanner Modal */}

@@ -3,9 +3,10 @@ import time
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
-from ..models.database import StudentModel, ParentModel, get_db
+from sqlalchemy import select, or_, func, case
+from ..models.database import StudentModel, ParentModel, BusModel, get_db
 from ..schemas.schemas import StudentCreate, StudentResponse
+from typing import Any
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -122,6 +123,25 @@ async def create_student(student: StudentCreate, db: AsyncSession = Depends(get_
         db.add(new_parent)
         db_student.parent_id = new_parent.id
 
+        buses_result = await db.execute(select(BusModel))
+        buses = buses_result.scalars().all()
+
+        for bus in buses:
+            counts_result = await db.execute(
+                select(
+                    func.count(StudentModel.id),
+                    func.sum(case((StudentModel.status == "BOARDED", 1), else_ =0)),
+                    func.sum(case((StudentModel.status == "OFFBOARDED", 1), else_ =0)),
+                    func.sum(case((StudentModel.status == "WAITING", 1), else_ =0)),
+                ).where(StudentModel.bus_id == bus.id)
+            )
+            total, boarded, offboarded, waiting = counts_result.one()
+
+            bus.total_assigned_students = total or 0
+            bus.inside_bus_count = boarded or 0
+            bus.offboarded_count = offboarded or 0
+            bus.waiting_count = waiting or 0
+
     await db.commit()
     await db.refresh(db_student)
 
@@ -151,5 +171,95 @@ async def delete_student(student_id: str, db: AsyncSession = Depends(get_db)):
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     await db.delete(student)
-    await db.commit()
+    await db.flush()
+
+    buses_result = await db.execute(select(BusModel))
+    buses = buses_result.scalars().all()
+
+    for bus in buses:
+        counts_result = await db.execute(
+            select(
+                func.count(StudentModel.id),
+                func.sum(case((StudentModel.status == "BOARDED", 1), else_ =0)),
+                func.sum(case((StudentModel.status == "OFFBOARDED", 1), else_ =0)),
+                func.sum(case((StudentModel.status == "WAITING", 1), else_ =0)),
+            ).where(StudentModel.bus_id == bus.id)
+        )
+        total, boarded, offboarded, waiting = counts_result.one()
+
+        bus.total_assigned_students = total or 0
+        bus.inside_bus_count = boarded or 0
+        bus.offboarded_count = offboarded or 0
+        bus.waiting_count = waiting or 0
+
+
     return {"message": f"Student {student_id} deleted successfully"}
+
+
+@router.put("/{student_id}")
+async def update_student(
+    student_id: str,
+    student: StudentCreate,
+    db: AsyncSession = Depends(get_db)
+):
+
+    result = await db.execute(
+        select(StudentModel).filter(StudentModel.id == student_id)
+    )
+    existing = result.scalar_one_or_none()
+
+    if not existing:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    result = await db.execute(
+        select(StudentModel).filter(
+            StudentModel.roll_no == student.rollNo,
+            StudentModel.id != student_id
+        )
+    )
+    duplicate = result.scalar_one_or_none()
+
+    if duplicate:
+        raise HTTPException(
+            status_code = 400,
+            detail= "Roll number already exists"
+        )
+    existing.name = student.name
+    existing.roll_no = student.rollNo
+    existing.grade = student.grade
+    existing.section = student.section
+    existing.address = student.address
+    existing.bus_id = student.busId
+    existing.bus_number = student.busNumber
+    existing.route_name = student.routeName
+    existing.parent_id = student.parentId
+    existing.parent_name = student.parentName
+    existing.parent_phone = student.parentPhone
+    existing.avatar_url = student.avatarUrl
+
+    if student.faceVector is not None:
+        existing.face_vector = json.dumps(student.faceVector)
+
+    await db.commit()
+    await db.refresh(existing)
+
+    
+    response: dict[str, Any] = {
+        "id": existing.id,
+        "name": existing.name,
+        "rollNo": existing.roll_no,
+        "grade": existing.grade,
+        "section": existing.section,
+        "address": existing.address,
+        "busId": existing.bus_id,
+        "busNumber": existing.bus_number,
+        "routeName": existing.route_name,
+        "parentId": existing.parent_id,
+        "parentName": existing.parent_name,
+        "parentPhone": existing.parent_phone,
+        "status": existing.status,
+        "lastCheckin": existing.last_checkin,
+        "avatarUrl": existing.avatar_url,
+        "faceRegistered": existing.face_registered,
+    }
+    return response

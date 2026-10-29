@@ -14,6 +14,11 @@ export interface Student {
   currentAddress?: string;
   busId: string;
   busNumber: string;
+  transferHistory?:{
+    formBus: string;
+    toBus: string;
+    date: string;
+  }[];
   routeId?: string;
   routeName: string;
   pickupStop?: string;

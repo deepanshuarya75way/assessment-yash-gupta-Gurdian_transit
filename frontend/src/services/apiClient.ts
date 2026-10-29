@@ -38,6 +38,20 @@ export class ApiClient {
       });
       if (!res.ok) return null;
       return await res.json();
+    } catch { 
+      return null;
+    }
+  }
+
+  static async updateStudent(student: Student): Promise<Student | null> {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/students/${student.id}}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(student),
+      });
+      if (!res.ok) return null;
+      return await res.json();
     } catch {
       return null;
     }

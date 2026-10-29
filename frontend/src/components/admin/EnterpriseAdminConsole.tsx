@@ -444,9 +444,55 @@ export default function EnterpriseAdminConsole() {
     }
   };
 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   const handleUpdateStudent = (updated: Student) => {
+    const oldStudent = students.find((s) => s.id === updated.id);
+
+    if(oldStudent && oldStudent.busId !== updated.busId){
+      updated.transferHistory = [
+        ...(oldStudent.transferHistory || []),
+        {
+          formBus: oldStudent.busNumber,
+          toBus: updated.busNumber,
+          date: new Date().toLocaleDateString(),
+        },
+      ];
+    }
+ 
+    setBuses((prevBuses) => {
+        const oldStudent = students.find((s) => s.id === handleUpdateDriver.id);
+
+        if(!oldStudent || oldStudent.busId === updated.busId){
+          return prevBuses;
+        }
+
+        return prevBuses.map((bus) => {
+          if(bus.id === oldStudent.busId){
+            return {
+              ...bus,
+              totalAssignedStudents: Math.max(0,bus.totalAssignedStudents-1),
+
+            };
+          }
+
+          if(bus.id === updated.busId){
+            return{
+              ...bus,
+              totalAssignedStudents: bus.totalAssignedStudents+1,
+            };
+          }
+          return bus;
+        });
+
+    });
     setStudents((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
-    ApiClient.createStudent(updated);
+    ApiClient.updateStudent(updated);
 
     if (updated.parentName && updated.parentName !== "No Parent Assigned" && updated.parentName.trim() !== "") {
       setParents((prevParents) => {
@@ -548,7 +594,7 @@ export default function EnterpriseAdminConsole() {
               parentName: parent.name,
               parentPhone: parent.phone,
             };
-            ApiClient.createStudent(updatedStudent);
+            ApiClient.updateStudent(updatedStudent);
             return updatedStudent;
           }
           return s;
@@ -1082,6 +1128,7 @@ export default function EnterpriseAdminConsole() {
         }}
         buses={buses}
         parents={parents}
+        students ={students}
       />
 
       <MobileDemoModal

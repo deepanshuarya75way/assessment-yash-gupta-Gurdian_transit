@@ -34,6 +34,7 @@ interface StudentModalProps {
   autoFilledOcrData?: ExtractedIdCardData | null;
   buses: Bus[];
   parents: Parent[];
+  students: Student[];
 }
 
 export const StudentModal: React.FC<StudentModalProps> = ({
@@ -44,6 +45,7 @@ export const StudentModal: React.FC<StudentModalProps> = ({
   autoFilledOcrData,
   buses,
   parents,
+  students,
 }) => {
   const [formData, setFormData] = useState<Partial<Student>>({
     name: "",
@@ -198,6 +200,13 @@ export const StudentModal: React.FC<StudentModalProps> = ({
       }));
       setParentRelation(parentObj.relation || "Father");
     }
+  };
+
+  const getFreeSeats = (bus: Bus)=> {
+    const assignedStudents = students.filter(
+      (student)=> student.busId === bus.id
+    ).length;
+    return Math.max(0, bus.capacity - assignedStudents);
   };
 
   const handleBusChange = (busId: string) => {
@@ -451,11 +460,15 @@ export const StudentModal: React.FC<StudentModalProps> = ({
                 onChange={(e) => handleBusChange(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900"
               >
-                {buses.map((b) => (
+                {buses.map((b) => {
+                  const freeSeats = getFreeSeats(b);
+                  return(
                   <option key={b.id} value={b.id}>
                     {b.busNumber} ({b.driverName}) - {b.routeName}
+                    {"| Free Seats: "}{freeSeats}/{b.capacity}
                   </option>
-                ))}
+                );
+})}
               </select>
             </div>
 
